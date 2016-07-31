@@ -92,8 +92,8 @@ void initialise()
 	GLuint program = glCreateProgram();
 	glAttachShader(program, shaderv);
 	glAttachShader(program, shaderf);
-	//glAttachShader(program, shaderc);
-	//glAttachShader(program, shadere);
+	glAttachShader(program, shaderc);
+	glAttachShader(program, shadere);
 	glLinkProgram(program);
 
 	GLint status;
@@ -113,11 +113,11 @@ void initialise()
 
 	
 
-	GLfloat outLevel[4] = { 6,6,6,6 };
-	GLfloat inLevel[2] = { 6,6 };
+	/*GLfloat outLevel[4] = { 1,1,1,1 };
+	GLfloat inLevel[2] = { 1,1 };*/
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
-	glPatchParameterfv(GL_PATCH_DEFAULT_OUTER_LEVEL, outLevel);
-	glPatchParameterfv(GL_PATCH_DEFAULT_INNER_LEVEL, inLevel);
+	/*glPatchParameterfv(GL_PATCH_DEFAULT_OUTER_LEVEL, outLevel);
+	glPatchParameterfv(GL_PATCH_DEFAULT_INNER_LEVEL, inLevel);*/
 
 
 	GLuint vboID[4];
@@ -148,7 +148,7 @@ void display()
 {
 	vec3 look = rotate(lookPos - cameraPos, radians(horizontalAngle), vec3(0.0, 1.0, 0.0));
 	look = rotate(look, radians(verticalAngle), vec3(1.0, 0.0, 0.0));
-	mat4 view = lookAt(vec3(0.0, 15.0, 12.0), vec3(0,0,0), upVec); //view matrix
+	mat4 view = lookAt(cameraPos, lookPos, upVec); //view matrix
 	mat4 projView = proj*view;  //Product matrix
 
 	mat4 matrix = mat4(1.0);
@@ -158,7 +158,7 @@ void display()
 
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(vaoID);
-	glDrawElements(GL_QUADS, GRID_WIDTH * GRID_HEIGHT * 4, GL_UNSIGNED_SHORT, NULL);
+	glDrawElements(GL_PATCHES, GRID_WIDTH * GRID_HEIGHT * 4, GL_UNSIGNED_SHORT, NULL);
 	glFlush();
 }
 
@@ -182,27 +182,32 @@ void handleSpecialKeypress(int key, int x, int y) {
 
 	glutPostRedisplay();
 }
-//
-//void handleKeypress(unsigned char key, int x, int y)
-//{
-//	mat4 translate = glm::translate(mat4(1.f), );
-//	vec4 vector(1.f, 1.f, 1.f, 1.f);
-//	glm::vec4 transformedVector = translate * vector;
-//	mat4 moveMat(1.0f, vec3(cameraPos.x, cameraPos.y, cameraPos.z));
-//	switch (key)
-//	{
-//	case 'w':
-//		moveMat = mat4
-//	case 'a':
-//
-//	case 's':
-//
-//	case 'd':
-//
-//	default: return;
-//	}
-//	glutPostRedisplay();*/
-//}
+
+void handleKeypress(unsigned char key, int x, int y)
+{
+	switch (key)
+	{
+	case 'w':
+		cameraPos += vec3(0.0, 0.0, -1.0);
+		lookPos += vec3(0.0, 0.0, -1.0);
+		break;
+	case 'a':
+		cameraPos += vec3(-1.0, 0.0, 0.0);
+		lookPos += vec3(-1.0, 0.0, 0.0);
+		break;
+	case 's':
+		cameraPos += vec3(0.0, 0.0, 1.0);
+		lookPos += vec3(0.0, 0.0, 1.0);
+		break;
+	case 'd':
+		cameraPos += vec3(1.0, 0.0, 0.0);
+		lookPos += vec3(1.0, 0.0, 0.0);
+		break;
+
+	default: return;
+	}
+	glutPostRedisplay();
+}
 
 int main(int argc, char** argv)
 {
@@ -229,7 +234,7 @@ int main(int argc, char** argv)
 	initialise();
 	glutDisplayFunc(display);
 	glutSpecialFunc(handleSpecialKeypress);
-	//glutKeyboardFunc(handleKeypress);
+	glutKeyboardFunc(handleKeypress);
 	glutMainLoop();
 }
 
