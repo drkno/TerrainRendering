@@ -8,6 +8,7 @@
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include "CubePatches.h"
+#include "loadTGA.h"
 using namespace std;
 using namespace glm;
 
@@ -18,6 +19,7 @@ float horizontalAngle = 0.0, verticalAngle = 0.0;
 mat4 proj;
 vec3 cameraPos;
 vec3 lookPos;
+GLuint texID;
 
 vec3 upVec;
 
@@ -29,24 +31,14 @@ extern "C" {
 
 void loadTextures()
 {
-	//glGenTextures(1, &texID);   //Generate 1 texture ID
-	//							// Load brick texture
-	//glActiveTexture(GL_TEXTURE0);  //Texture unit 0
-	//glBindTexture(GL_TEXTURE_2D, texID);
-	//loadTGA("Brick.tga");
+	glGenTextures(1, &texID);   //Generate 1 texture ID
+								// Load brick texture
+	glActiveTexture(GL_TEXTURE0);  //Texture unit 0
+	glBindTexture(GL_TEXTURE_2D, texID);
+	loadTGA("heightmap\\HeightMap.tga");
 
-	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	//glGenTextures(1, &texIDMoss);   //Generate 1 texture ID
-	//								// Load brick texture
-	//glActiveTexture(GL_TEXTURE1);  //Texture unit 0
-	//glBindTexture(GL_TEXTURE_2D, texIDMoss);
-	//loadTGA("Moss.tga");
-
-	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 }
 
 GLuint loadShader(GLenum shaderType, string filename)
@@ -80,9 +72,11 @@ GLuint loadShader(GLenum shaderType, string filename)
 
 void initialise()
 {
-	cameraPos = vec3(0.0, 15.0, 12.0);
-	lookPos = vec3(0.0, 0.0, 0.0);
+	cameraPos = vec3(50.0, 15.0, 12.0);
+	lookPos = vec3(50.0, 10.0, 0.0);
 	upVec = vec3(0.0, 1.0, 0.0);
+
+	
 
 	GLuint shaderv = loadShader(GL_VERTEX_SHADER, "CubePatches.vert");
 	GLuint shaderf = loadShader(GL_FRAGMENT_SHADER, "CubePatches.frag");
@@ -95,6 +89,11 @@ void initialise()
 	glAttachShader(program, shaderc);
 	glAttachShader(program, shadere);
 	glLinkProgram(program);
+
+
+	loadTextures();
+	GLuint texLoc = glGetUniformLocation(program, "heightMapSampler");
+	glUniform1i(texLoc, 0);
 
 	GLint status;
 	glGetProgramiv (program, GL_LINK_STATUS, &status);
