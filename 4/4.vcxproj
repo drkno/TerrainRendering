@@ -143,18 +143,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="CubePatches.frag" />
-    <None Include="CubePatches.vert" />
-    <None Include="CubePatchesControl.glsl" />
-    <None Include="CubePatchesEvaluation.glsl" />
+    <None Include="FragmentShader.frag" />
+    <None Include="VertexShader.vert" />
+    <None Include="ControlShader.glsl" />
+    <None Include="EvaluationShader.glsl" />
     <None Include="heightmap\HeightMap.raw" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CubePatches.cpp" />
+    <ClCompile Include="Terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CubePatches.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="loadTGA.h" />
   </ItemGroup>
   <ItemGroup>

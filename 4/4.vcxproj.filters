@@ -16,22 +16,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="CubePatches.vert" />
-    <None Include="CubePatches.frag" />
-    <None Include="CubePatchesControl.glsl" />
-    <None Include="CubePatchesEvaluation.glsl" />
     <None Include="heightmap\HeightMap.raw" />
+    <None Include="FragmentShader.frag" />
+    <None Include="EvaluationShader.glsl" />
+    <None Include="ControlShader.glsl" />
+    <None Include="VertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CubePatches.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CubePatches.h">
+    <ClInclude Include="loadTGA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadTGA.h">
+    <ClInclude Include="Terrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -40,5 +35,10 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="heightmap\HeightMap.tga" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

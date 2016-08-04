@@ -13,16 +13,11 @@ void main() {
 	          +    u  *    v  * gl_in[2].gl_Position
 	          + (1-u) *    v  * gl_in[3].gl_Position;
 
-	vec4 heightVec = texture(heightMapSampler, vec2(0,0));
+	float heightVec = texture(heightMapSampler, vec2(0,0)).r;
 
-	float value = ((abs(heightVec.x) + abs(heightVec.y) + abs(heightVec.z)) / 2726894656) * 10;
 
-	posn.y = value;
-	//if (height < 10000000) { 
-	//	posn.y = 0;
-	//}
-    //posn.y = height;
 
-	//posn.y = ;
+    //posn.y = heightVec;
+
 	gl_Position = mvpMatrix * posn;
 }

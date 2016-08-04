@@ -5,9 +5,8 @@
 #include <GL/freeglut.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/rotate_vector.hpp>
-#include "CubePatches.h"
+#include "Terrain.h"
 #include "loadTGA.h"
 using namespace std;
 using namespace glm;
@@ -19,7 +18,6 @@ float horizontalAngle = 0.0, verticalAngle = 0.0;
 mat4 proj;
 vec3 cameraPos;
 vec3 lookPos;
-GLuint texID;
 
 vec3 upVec;
 
@@ -31,9 +29,9 @@ extern "C" {
 
 void loadTextures()
 {
-	glGenTextures(1, &texID);   //Generate 1 texture ID
-								// Load brick texture
-	glActiveTexture(GL_TEXTURE0);  //Texture unit 0
+	GLuint texID;
+	glGenTextures(1, &texID);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texID);
 	loadTGA("heightmap\\HeightMap.tga");
 
@@ -76,12 +74,10 @@ void initialise()
 	lookPos = vec3(50.0, 10.0, 0.0);
 	upVec = vec3(0.0, 1.0, 0.0);
 
-	
-
-	GLuint shaderv = loadShader(GL_VERTEX_SHADER, "CubePatches.vert");
-	GLuint shaderf = loadShader(GL_FRAGMENT_SHADER, "CubePatches.frag");
-	GLuint shaderc = loadShader(GL_TESS_CONTROL_SHADER, "CubePatchesControl.glsl");
-	GLuint shadere = loadShader(GL_TESS_EVALUATION_SHADER, "CubePatchesEvaluation.glsl");
+	GLuint shaderv = loadShader(GL_VERTEX_SHADER, "VertexShader.vert");
+	GLuint shaderf = loadShader(GL_FRAGMENT_SHADER, "FragmentShader.frag");
+	GLuint shaderc = loadShader(GL_TESS_CONTROL_SHADER, "ControlShader.glsl");
+	GLuint shadere = loadShader(GL_TESS_EVALUATION_SHADER, "EvaluationShader.glsl");
 
 	GLuint program = glCreateProgram();
 	glAttachShader(program, shaderv);
@@ -109,15 +105,7 @@ void initialise()
 	glUseProgram(program);
 
 	proj = perspective(20.0f, 1.0f, 10.0f, 1000.0f);  //perspective projection matrix
-
-	
-
-	/*GLfloat outLevel[4] = { 1,1,1,1 };
-	GLfloat inLevel[2] = { 1,1 };*/
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
-	/*glPatchParameterfv(GL_PATCH_DEFAULT_OUTER_LEVEL, outLevel);
-	glPatchParameterfv(GL_PATCH_DEFAULT_INNER_LEVEL, inLevel);*/
-
 
 	GLuint vboID[4];
 
@@ -145,9 +133,8 @@ void initialise()
 
 void display()
 {
-	vec3 look = rotate(lookPos - cameraPos, radians(horizontalAngle), vec3(0.0, 1.0, 0.0));
-	look = rotate(look, radians(verticalAngle), vec3(1.0, 0.0, 0.0));
-	mat4 view = lookAt(cameraPos, lookPos, upVec); //view matrix
+	vec3 look = rotate(lookPos - cameraPos, radians(horizontalAngle), vec3(0.0, 1.0, 0.0)) + cameraPos;
+	mat4 view = lookAt(cameraPos, look, upVec); //view matrix
 	mat4 projView = proj*view;  //Product matrix
 
 	mat4 matrix = mat4(1.0);
@@ -164,16 +151,19 @@ void display()
 void handleSpecialKeypress(int key, int x, int y) {
 	switch (key) {
 	case GLUT_KEY_UP:
-		verticalAngle += 2;
+		cameraPos += vec3(0.0, 1.0, 0.0);
+		lookPos += vec3(0.0, 1.0, 0.0);
+		cout << cameraPos.y << endl;
 		break;
 	case GLUT_KEY_DOWN:
-		verticalAngle -= 2;
+		cameraPos += vec3(0.0, -1.0, 0.0);
+		lookPos += vec3(0.0, -1.0, 0.0);
 		break;
 	case GLUT_KEY_LEFT:
-		horizontalAngle -= 2;
+		horizontalAngle += 2;
 		break;
 	case GLUT_KEY_RIGHT:
-		horizontalAngle += 2;
+		horizontalAngle -= 2;
 		break;
 	default:
 		return;
@@ -184,27 +174,27 @@ void handleSpecialKeypress(int key, int x, int y) {
 
 void handleKeypress(unsigned char key, int x, int y)
 {
+	vec3 change;
 	switch (key)
 	{
 	case 'w':
-		cameraPos += vec3(0.0, 0.0, -1.0);
-		lookPos += vec3(0.0, 0.0, -1.0);
+		change = vec3(0.0, 0.0, -1.0);
 		break;
 	case 'a':
-		cameraPos += vec3(-1.0, 0.0, 0.0);
-		lookPos += vec3(-1.0, 0.0, 0.0);
+		change = vec3(-1.0, 0.0, 0.0);
 		break;
 	case 's':
-		cameraPos += vec3(0.0, 0.0, 1.0);
-		lookPos += vec3(0.0, 0.0, 1.0);
+		change = vec3(0.0, 0.0, 1.0);
 		break;
 	case 'd':
-		cameraPos += vec3(1.0, 0.0, 0.0);
-		lookPos += vec3(1.0, 0.0, 0.0);
+		change = vec3(1.0, 0.0, 0.0);
 		break;
 
 	default: return;
 	}
+	change = rotate(change, radians(horizontalAngle), vec3(0.0, 1.0, 0.0));
+	cameraPos += change;
+	lookPos += change;
 	glutPostRedisplay();
 }
 
@@ -215,7 +205,7 @@ int main(int argc, char** argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB|GLUT_DEPTH);
 	glutInitWindowSize(500, 500);
-	glutCreateWindow("Cube with Bezier patches");
+	glutCreateWindow("Terrain");
 	glutInitContextVersion (4, 2);
 	glutInitContextProfile ( GLUT_CORE_PROFILE );
 
