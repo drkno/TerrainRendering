@@ -74,10 +74,10 @@ void initialise()
 	lookPos = vec3(50.0, 10.0, 0.0);
 	upVec = vec3(0.0, 1.0, 0.0);
 
-	GLuint shaderv = loadShader(GL_VERTEX_SHADER, "VertexShader.vert");
-	GLuint shaderf = loadShader(GL_FRAGMENT_SHADER, "FragmentShader.frag");
-	GLuint shaderc = loadShader(GL_TESS_CONTROL_SHADER, "ControlShader.glsl");
-	GLuint shadere = loadShader(GL_TESS_EVALUATION_SHADER, "EvaluationShader.glsl");
+	GLuint shaderv = loadShader(GL_VERTEX_SHADER, "shaders\\VertexShader.glsl");
+	GLuint shaderf = loadShader(GL_FRAGMENT_SHADER, "shaders\\FragmentShader.glsl");
+	GLuint shaderc = loadShader(GL_TESS_CONTROL_SHADER, "shaders\\ControlShader.glsl");
+	GLuint shadere = loadShader(GL_TESS_EVALUATION_SHADER, "shaders\\EvaluationShader.glsl");
 
 	GLuint program = glCreateProgram();
 	glAttachShader(program, shaderv);
@@ -85,11 +85,6 @@ void initialise()
 	glAttachShader(program, shaderc);
 	glAttachShader(program, shadere);
 	glLinkProgram(program);
-
-
-	loadTextures();
-	GLuint texLoc = glGetUniformLocation(program, "heightMapSampler");
-	glUniform1i(texLoc, 0);
 
 	GLint status;
 	glGetProgramiv (program, GL_LINK_STATUS, &status);
@@ -103,6 +98,17 @@ void initialise()
 		delete[] strInfoLog;
 	}
 	glUseProgram(program);
+
+	matrixLoc = glGetUniformLocation(program, "mvpMatrix");
+	loadTextures();
+	GLuint texLoc = glGetUniformLocation(program, "heightMapSampler");
+	glUniform1i(texLoc, 0);
+	GLuint heightMapWidth = glGetUniformLocation(program, "heightMapWidth");
+	glUniform1i(heightMapWidth, HEIGHTMAP_WIDTH);
+	GLuint heightMapHeight = glGetUniformLocation(program, "heightMapHeight");
+	glUniform1i(heightMapHeight, HEIGHTMAP_HEIGHT);
+	GLuint heightMapHeightScale = glGetUniformLocation(program, "heightMapHeightScale");
+	glUniform1f(heightMapHeightScale, HEIGHTMAP_SCALEHEIGHT);
 
 	proj = perspective(20.0f, 1.0f, 10.0f, 1000.0f);  //perspective projection matrix
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
@@ -153,7 +159,6 @@ void handleSpecialKeypress(int key, int x, int y) {
 	case GLUT_KEY_UP:
 		cameraPos += vec3(0.0, 1.0, 0.0);
 		lookPos += vec3(0.0, 1.0, 0.0);
-		cout << cameraPos.y << endl;
 		break;
 	case GLUT_KEY_DOWN:
 		cameraPos += vec3(0.0, -1.0, 0.0);
@@ -204,7 +209,7 @@ int main(int argc, char** argv)
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB|GLUT_DEPTH);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(1000, 1000);
 	glutCreateWindow("Terrain");
 	glutInitContextVersion (4, 2);
 	glutInitContextProfile ( GLUT_CORE_PROFILE );
@@ -213,6 +218,8 @@ int main(int argc, char** argv)
 	{
 		cout << "GLEW initialization successful! " << endl;
 		cout << " Using GLEW version " << glewGetString(GLEW_VERSION) << endl;
+
+		cout << glGetString(GL_VERSION) << endl;
 	}
 	else
 	{

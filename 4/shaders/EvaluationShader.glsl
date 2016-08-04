@@ -2,6 +2,9 @@
 
 layout(quads, equal_spacing, ccw) in;
 uniform mat4 mvpMatrix;
+uniform int heightMapWidth;
+uniform int heightMapHeight;
+uniform float heightMapHeightScale;
 uniform sampler2D heightMapSampler;
 
 void main() {
@@ -13,11 +16,8 @@ void main() {
 	          +    u  *    v  * gl_in[2].gl_Position
 	          + (1-u) *    v  * gl_in[3].gl_Position;
 
-	float heightVec = texture(heightMapSampler, vec2(0,0)).r;
-
-
-
-    //posn.y = heightVec;
+	vec4 heightVec = texture(heightMapSampler, vec2(posn.x / heightMapWidth, posn.z / heightMapHeight));
+	posn.y = (heightVec.r + heightVec.g + heightVec.b) * heightMapHeightScale;
 
 	gl_Position = mvpMatrix * posn;
 }

@@ -17,10 +17,10 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="heightmap\HeightMap.raw" />
-    <None Include="FragmentShader.frag" />
-    <None Include="EvaluationShader.glsl" />
-    <None Include="ControlShader.glsl" />
-    <None Include="VertexShader.vert" />
+    <None Include="shaders\ControlShader.glsl" />
+    <None Include="shaders\EvaluationShader.glsl" />
+    <None Include="shaders\VertexShader.glsl" />
+    <None Include="shaders\FragmentShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="loadTGA.h">

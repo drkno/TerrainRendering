@@ -1,5 +1,9 @@
 #pragma once
 
+#define HEIGHTMAP_WIDTH 512
+#define HEIGHTMAP_HEIGHT 512
+#define HEIGHTMAP_SCALEHEIGHT 20.0f
+
 #define GRID_WIDTH 100
 #define GRID_HEIGHT 100
 #define GRID_CELL_WIDTH 2
