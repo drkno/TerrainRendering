@@ -5,10 +5,15 @@ in float diffuseTerm;
 
 void main() 
 {
-	if (diffuseTerm > 1) {
-		gl_FragColor = vec4(1, 0, 0, 1.0);
-	}
-	else {
-		gl_FragColor = vec4(diffuseTerm, diffuseTerm, diffuseTerm, 1.0);
-	}
+	vec4 ambColour = vec4(0.0, 1.0, 0.0, 1.0);
+	vec4 diffColour = vec4(diffuseTerm, diffuseTerm, diffuseTerm, 1.0);
+
+	gl_FragColor = diffColour * ambColour;
+
+	//if (diffuseTerm > 1) {
+	//	gl_FragColor = vec4(1, 0, 0, 1.0);
+	//}
+	//else {
+	//	gl_FragColor = vec4(diffuseTerm, diffuseTerm, diffuseTerm, 1.0);
+	//}
 }

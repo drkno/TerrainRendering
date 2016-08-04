@@ -19,5 +19,5 @@ void main() {
 	vec4 heightVec = texture(heightMapSampler, vec2(posn.x / heightMapWidth, posn.z / heightMapHeight));
 	posn.y = (heightVec.r + heightVec.g + heightVec.b) * heightMapHeightScale;
 
-	gl_Position = mvpMatrix * posn;
+	gl_Position = posn;
 }

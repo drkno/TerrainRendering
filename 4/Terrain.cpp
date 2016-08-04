@@ -15,12 +15,14 @@ GLuint vaoID;
 GLuint theProgram;
 GLuint matrixLoc;
 GLuint lgtLoc;
+GLuint posLoc;
 float horizontalAngle = 0.0, verticalAngle = 0.0;
 mat4 proj;
 vec3 cameraPos;
 vec3 lookPos;
 vec4 light;
 vec3 upVec;
+GLenum drawMode;
 
 #ifdef _WIN32
 extern "C" {
@@ -76,6 +78,7 @@ void initialise()
 	lookPos = vec3(GRID_WIDTH * GRID_CELL_WIDTH / 2, HEIGHTMAP_SCALEHEIGHT * 2 - 5, 0.0);
 	upVec = vec3(0.0, 1.0, 0.0);
 	light = vec4(20.0, HEIGHTMAP_SCALEHEIGHT * 2, 20.0, 1.0);
+	drawMode = GL_FILL;
 
 	GLuint shaderv = loadShader(GL_VERTEX_SHADER, "shaders\\VertexShader.glsl");
 	GLuint shaderf = loadShader(GL_FRAGMENT_SHADER, "shaders\\FragmentShader.glsl");
@@ -115,6 +118,7 @@ void initialise()
 	GLuint heightMapHeightScale = glGetUniformLocation(program, "heightMapHeightScale");
 	glUniform1f(heightMapHeightScale, HEIGHTMAP_SCALEHEIGHT);
 	lgtLoc = glGetUniformLocation(program, "lightPos");
+	posLoc = glGetUniformLocation(program, "cameraPos");
 
 	proj = perspective(20.0f, 1.0f, 10.0f, 1000.0f);
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
@@ -153,7 +157,7 @@ void display()
 	mat4 prodMatrix = projView * matrix;
 
 	glUniform4fv(lgtLoc, 1, &light[0]);
-
+	glUniform4fv(posLoc, 1, &cameraPos[0]);
 	glUniformMatrix4fv(matrixLoc, 1, GL_FALSE, &prodMatrix[0][0]);
 
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -185,6 +189,21 @@ void handleSpecialKeypress(int key, int x, int y) {
 	glutPostRedisplay();
 }
 
+void toggleMode()
+{
+	switch (drawMode)
+	{
+	case GL_FILL:
+		drawMode = GL_LINE;
+		break;
+	case GL_LINE:
+		drawMode = GL_FILL;
+		break;
+	}
+	glPolygonMode(GL_FRONT_AND_BACK, drawMode);
+	glutPostRedisplay();
+}
+
 void handleKeypress(unsigned char key, int x, int y)
 {
 	vec3 change;
@@ -202,7 +221,9 @@ void handleKeypress(unsigned char key, int x, int y)
 	case 'd':
 		change = vec3(1.0, 0.0, 0.0);
 		break;
-
+	case 9:
+		toggleMode();
+		return;
 	default: return;
 	}
 	change = rotate(change, radians(horizontalAngle), vec3(0.0, 1.0, 0.0));
