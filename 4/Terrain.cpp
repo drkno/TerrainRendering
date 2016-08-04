@@ -23,7 +23,8 @@ vec3 upVec;
 
 #ifdef _WIN32
 extern "C" {
-	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+	__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 #endif
 
@@ -70,8 +71,8 @@ GLuint loadShader(GLenum shaderType, string filename)
 
 void initialise()
 {
-	cameraPos = vec3(50.0, 15.0, 12.0);
-	lookPos = vec3(50.0, 10.0, 0.0);
+	cameraPos = vec3(GRID_WIDTH * GRID_CELL_WIDTH / 2, HEIGHTMAP_SCALEHEIGHT * 2, 12.0);
+	lookPos = vec3(GRID_WIDTH * GRID_CELL_WIDTH / 2, HEIGHTMAP_SCALEHEIGHT * 2 - 5, 0.0);
 	upVec = vec3(0.0, 1.0, 0.0);
 
 	GLuint shaderv = loadShader(GL_VERTEX_SHADER, "shaders\\VertexShader.glsl");
@@ -209,7 +210,7 @@ int main(int argc, char** argv)
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB|GLUT_DEPTH);
-	glutInitWindowSize(1000, 1000);
+	glutInitWindowSize(1280, 720);
 	glutCreateWindow("Terrain");
 	glutInitContextVersion (4, 2);
 	glutInitContextProfile ( GLUT_CORE_PROFILE );
