@@ -14,11 +14,12 @@ using namespace glm;
 GLuint vaoID;
 GLuint theProgram;
 GLuint matrixLoc;
+GLuint lgtLoc;
 float horizontalAngle = 0.0, verticalAngle = 0.0;
 mat4 proj;
 vec3 cameraPos;
 vec3 lookPos;
-
+vec4 light;
 vec3 upVec;
 
 #ifdef _WIN32
@@ -74,17 +75,20 @@ void initialise()
 	cameraPos = vec3(GRID_WIDTH * GRID_CELL_WIDTH / 2, HEIGHTMAP_SCALEHEIGHT * 2, 12.0);
 	lookPos = vec3(GRID_WIDTH * GRID_CELL_WIDTH / 2, HEIGHTMAP_SCALEHEIGHT * 2 - 5, 0.0);
 	upVec = vec3(0.0, 1.0, 0.0);
+	light = vec4(20.0, HEIGHTMAP_SCALEHEIGHT * 2, 20.0, 1.0);
 
 	GLuint shaderv = loadShader(GL_VERTEX_SHADER, "shaders\\VertexShader.glsl");
 	GLuint shaderf = loadShader(GL_FRAGMENT_SHADER, "shaders\\FragmentShader.glsl");
 	GLuint shaderc = loadShader(GL_TESS_CONTROL_SHADER, "shaders\\ControlShader.glsl");
 	GLuint shadere = loadShader(GL_TESS_EVALUATION_SHADER, "shaders\\EvaluationShader.glsl");
+	GLuint shaderg = loadShader(GL_GEOMETRY_SHADER, "shaders\\GeometryShader.glsl");
 
 	GLuint program = glCreateProgram();
 	glAttachShader(program, shaderv);
 	glAttachShader(program, shaderf);
 	glAttachShader(program, shaderc);
 	glAttachShader(program, shadere);
+	glAttachShader(program, shaderg);
 	glLinkProgram(program);
 
 	GLint status;
@@ -110,8 +114,9 @@ void initialise()
 	glUniform1i(heightMapHeight, HEIGHTMAP_HEIGHT);
 	GLuint heightMapHeightScale = glGetUniformLocation(program, "heightMapHeightScale");
 	glUniform1f(heightMapHeightScale, HEIGHTMAP_SCALEHEIGHT);
+	lgtLoc = glGetUniformLocation(program, "lightPos");
 
-	proj = perspective(20.0f, 1.0f, 10.0f, 1000.0f);  //perspective projection matrix
+	proj = perspective(20.0f, 1.0f, 10.0f, 1000.0f);
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 
 	GLuint vboID[4];
@@ -133,7 +138,7 @@ void initialise()
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glutPostRedisplay();
 }
@@ -141,11 +146,13 @@ void initialise()
 void display()
 {
 	vec3 look = rotate(lookPos - cameraPos, radians(horizontalAngle), vec3(0.0, 1.0, 0.0)) + cameraPos;
-	mat4 view = lookAt(cameraPos, look, upVec); //view matrix
-	mat4 projView = proj*view;  //Product matrix
+	mat4 view = lookAt(cameraPos, look, upVec);
+	mat4 projView = proj*view;
 
 	mat4 matrix = mat4(1.0);
-	mat4 prodMatrix = projView * matrix;        //Model-view-proj matrix
+	mat4 prodMatrix = projView * matrix;
+
+	glUniform4fv(lgtLoc, 1, &light[0]);
 
 	glUniformMatrix4fv(matrixLoc, 1, GL_FALSE, &prodMatrix[0][0]);
 

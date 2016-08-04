@@ -21,6 +21,7 @@
     <None Include="shaders\EvaluationShader.glsl" />
     <None Include="shaders\VertexShader.glsl" />
     <None Include="shaders\FragmentShader.glsl" />
+    <None Include="shaders\GeometryShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="loadTGA.h">
