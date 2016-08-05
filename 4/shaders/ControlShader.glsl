@@ -7,12 +7,18 @@ uniform vec4 cameraPos;
 void main() {
 	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
 
-	float dmin = 5.0;
-	float dmax = 200.0;
-	float d = max(min(abs(distance(gl_in[gl_InvocationID].gl_Position, cameraPos)), dmax), dmin);
+	float dmin = abs(distance(gl_in[0].gl_Position, cameraPos));
+	float dmax = dmin;
+	for (int i = 1; i < gl_in.length(); i++) {
+		float d = abs(distance(gl_in[i].gl_Position, cameraPos));
+		dmin = min(dmin, d);
+		dmax = max(dmax, d);
+	}
 
-	int Lhigh = 6;
-	int Llow = 10;
+	float d = abs(distance(gl_in[gl_InvocationID].gl_Position, cameraPos));
+
+	int Lhigh = 10;
+	int Llow = 1;
 
 	float L = ((d - dmin) / (dmax - dmin)) * (Llow - Lhigh) + Lhigh;
 
@@ -20,6 +26,6 @@ void main() {
 	gl_TessLevelOuter[1] = L;
 	gl_TessLevelOuter[2] = L;
 	gl_TessLevelOuter[3] = L;
-	gl_TessLevelInner[0] = L;
-	gl_TessLevelInner[1] = L;
+	gl_TessLevelInner[0] = L / 4;
+	gl_TessLevelInner[1] = L / 4;
 }

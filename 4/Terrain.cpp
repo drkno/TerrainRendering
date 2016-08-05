@@ -197,6 +197,9 @@ void toggleMode()
 		drawMode = GL_LINE;
 		break;
 	case GL_LINE:
+		drawMode = GL_POINT;
+		break;
+	case GL_POINT:
 		drawMode = GL_FILL;
 		break;
 	}
