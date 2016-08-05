@@ -17,6 +17,8 @@ void main() {
 
 	float d = abs(distance(gl_in[gl_InvocationID].gl_Position, cameraPos));
 
+	
+
 	int Lhigh = 10;
 	int Llow = 1;
 

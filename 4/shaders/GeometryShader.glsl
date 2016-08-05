@@ -33,7 +33,7 @@ void main() {
 		diffuseTerm = max(dot(lightVec, norMatrix), 0.0f);
 
 		float dist = max(100 - abs(distance(posn, cameraPos)), 1);
-		float texScale = dist / 100;
+		float texScale = 1 - (dist / 100);
 
 		texCoords = vec2(((posn.x - minx) / scalex) * texScale, ((posn.z - minz) / scalez) * texScale);
 		if (posn.y < div) {
