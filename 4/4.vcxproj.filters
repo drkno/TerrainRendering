@@ -36,6 +36,10 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="heightmap\HeightMap.tga" />
+    <Image Include="textures\grass.tga" />
+    <Image Include="textures\rock.tga" />
+    <Image Include="textures\snow.tga" />
+    <Image Include="textures\water.tga" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Terrain.cpp">

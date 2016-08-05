@@ -16,6 +16,7 @@ GLuint theProgram;
 GLuint matrixLoc;
 GLuint lgtLoc;
 GLuint posLoc;
+GLuint wireLoc;
 float horizontalAngle = 0.0, verticalAngle = 0.0;
 mat4 proj;
 vec3 cameraPos;
@@ -33,11 +34,48 @@ extern "C" {
 
 void loadTextures()
 {
-	GLuint texID;
-	glGenTextures(1, &texID);
+	GLuint htexID;
+	glGenTextures(1, &htexID);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texID);
+	glBindTexture(GL_TEXTURE_2D, htexID);
 	loadTGA("heightmap\\HeightMap.tga");
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+
+	GLuint wtexID;
+	glGenTextures(1, &wtexID);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, wtexID);
+	loadTGA("textures\\water.tga");
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	GLuint gtexID;
+	glGenTextures(1, &gtexID);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, gtexID);
+	loadTGA("textures\\grass.tga");
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	GLuint rtexID;
+	glGenTextures(1, &rtexID);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, rtexID);
+	loadTGA("textures\\rock.tga");
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	GLuint stexID;
+	glGenTextures(1, &stexID);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, stexID);
+	loadTGA("textures\\snow.tga");
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -109,8 +147,18 @@ void initialise()
 
 	matrixLoc = glGetUniformLocation(program, "mvpMatrix");
 	loadTextures();
-	GLuint texLoc = glGetUniformLocation(program, "heightMapSampler");
-	glUniform1i(texLoc, 0);
+	GLuint htexLoc = glGetUniformLocation(program, "heightMapSampler");
+	glUniform1i(htexLoc, 0);
+	GLuint wtexLoc = glGetUniformLocation(program, "waterSampler");
+	glUniform1i(wtexLoc, 1);
+	GLuint gtexLoc = glGetUniformLocation(program, "grassSampler");
+	glUniform1i(gtexLoc, 2);
+	GLuint rtexLoc = glGetUniformLocation(program, "rockSampler");
+	glUniform1i(rtexLoc, 3);
+	GLuint stexLoc = glGetUniformLocation(program, "snowSampler");
+	glUniform1i(stexLoc, 4);
+
+
 	GLuint heightMapWidth = glGetUniformLocation(program, "heightMapWidth");
 	glUniform1i(heightMapWidth, HEIGHTMAP_WIDTH);
 	GLuint heightMapHeight = glGetUniformLocation(program, "heightMapHeight");
@@ -119,6 +167,7 @@ void initialise()
 	glUniform1f(heightMapHeightScale, HEIGHTMAP_SCALEHEIGHT);
 	lgtLoc = glGetUniformLocation(program, "lightPos");
 	posLoc = glGetUniformLocation(program, "cameraPos");
+	wireLoc = glGetUniformLocation(program, "isWireframe");
 
 	proj = perspective(20.0f, 1.0f, 10.0f, 1000.0f);
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
@@ -158,6 +207,7 @@ void display()
 
 	glUniform4fv(lgtLoc, 1, &light[0]);
 	glUniform4fv(posLoc, 1, &cameraPos[0]);
+	glUniform1i(wireLoc, drawMode == GL_FILL ? 0 : 1);
 	glUniformMatrix4fv(matrixLoc, 1, GL_FALSE, &prodMatrix[0][0]);
 
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);

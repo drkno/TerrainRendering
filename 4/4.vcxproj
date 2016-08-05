@@ -161,6 +161,10 @@
   <ItemGroup>
     <Image Include="heightmap\HeightMap.jpg" />
     <Image Include="heightmap\HeightMap.tga" />
+    <Image Include="textures\grass.tga" />
+    <Image Include="textures\rock.tga" />
+    <Image Include="textures\snow.tga" />
+    <Image Include="textures\water.tga" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
