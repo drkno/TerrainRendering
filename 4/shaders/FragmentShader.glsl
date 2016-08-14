@@ -1,6 +1,5 @@
 #version 400
 
-uniform sampler2D heightMapSampler;
 uniform sampler2D waterSampler;
 uniform sampler2D grassSampler;
 uniform sampler2D rockSampler;

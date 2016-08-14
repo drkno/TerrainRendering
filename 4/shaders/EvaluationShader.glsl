@@ -16,7 +16,10 @@ void main() {
 	          +    u  *    v  * gl_in[2].gl_Position
 	          + (1-u) *    v  * gl_in[3].gl_Position;
 
-	vec4 heightVec = texture(heightMapSampler, vec2(posn.x / heightMapWidth, posn.z / heightMapHeight));
+	// set height and prevent unintended edge features
+	float x = max(posn.x / heightMapWidth, 0.001f);
+	float z = max(abs(posn.z / heightMapHeight), 0.001f);
+	vec4 heightVec = texture(heightMapSampler, vec2(x, z));
 	posn.y = (heightVec.r + heightVec.g + heightVec.b) * heightMapHeightScale;
 
 	gl_Position = posn;

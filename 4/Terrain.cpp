@@ -26,6 +26,7 @@ vec3 upVec;
 GLenum drawMode;
 
 #ifdef _WIN32
+// Force dedicated GPU on Windows
 extern "C" {
 	__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
@@ -102,7 +103,6 @@ GLuint loadShader(GLenum shaderType, string filename)
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
 		GLchar *strInfoLog = new GLchar[infoLogLength + 1];
 		glGetShaderInfoLog(shader, infoLogLength, NULL, strInfoLog);
-		const char *strShaderType = NULL;
 		cerr <<  "Compile failure in shader: " << strInfoLog << endl;
 		delete[] strInfoLog;
 	}
